@@ -2,10 +2,13 @@
 
 A containerized solution for managing GitHub Actions self-hosted runners with Docker support. This repository provides an easy way to deploy and manage multiple self-hosted runners for your GitHub repositories or organizations.
 
+**💡 Managing Multiple Projects?** Check out [docs/MULTI_PROJECT_GUIDE.md](docs/MULTI_PROJECT_GUIDE.md) for advanced multi-project setups using Docker Compose profiles!
+
 ## Features
 
 - 🐳 **Docker-in-Docker Support**: Runners can execute Docker commands within workflows
 - 🔄 **Multiple Runners**: Easy configuration for running multiple runners simultaneously
+- 🎯 **Multi-Project Support**: Run runners for different projects with Docker Compose profiles
 - 📦 **Containerized**: Isolated environment for each runner
 - 🔒 **Secure**: Proper permission handling for Docker socket access
 - ⚙️ **Configurable**: Custom runner names and environment variables
@@ -20,14 +23,16 @@ A containerized solution for managing GitHub Actions self-hosted runners with Do
 
 ## Quick Start
 
-### 1. Clone the Repository
+### Single Project Setup
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/edgarberlinck/gh-container-runner.git
 cd gh-container-runner
 ```
 
-### 2. Create Environment File
+#### 2. Create Environment File
 
 Create a `.env` file:
 
@@ -40,19 +45,40 @@ RUNNER_TOKEN=your-runner-token-here
 - Repositories: `https://github.com/USERNAME/REPO/settings/actions/runners/new`
 - Organizations: `https://github.com/organizations/ORG/settings/actions/runners/new`
 
-### 3. Start the Runners
+#### 3. Start the Runners
 
 ```bash
 docker compose up -d
 ```
 
-### 4. Verify
+#### 4. Verify
 
 ```bash
 docker compose logs -f
 ```
 
 Runners should appear in GitHub under **Settings → Actions → Runners**.
+
+---
+
+### Multi-Project Setup 🆕
+
+Want to run runners for multiple projects? Use profiles!
+
+```bash
+# 1. Copy example config
+cp .env.multi-project.example .env
+
+# 2. Edit .env with your project tokens
+# 3. Start specific projects
+docker compose -f docker-compose.multi-project.yml --profile event-me up -d
+docker compose -f docker-compose.multi-project.yml --profile office365 up -d
+
+# Or start all at once
+docker compose -f docker-compose.multi-project.yml --profile event-me --profile office365 up -d
+```
+
+**📖 See:** [docs/QUICKSTART_MULTI_PROJECT.md](docs/QUICKSTART_MULTI_PROJECT.md) for 5-minute setup guide
 
 ## Configuration
 
@@ -84,6 +110,24 @@ services:
 volumes:
   runner-3-data:
 ```
+
+### Managing Multiple Projects
+
+Want to run runners for different projects simultaneously? Use Docker Compose profiles:
+
+```bash
+# Configure projects in .env
+cp .env.multi-project.example .env
+
+# Start only specific project runners
+docker compose -f docker-compose.multi-project.yml --profile event-me up -d
+docker compose -f docker-compose.multi-project.yml --profile office365 up -d
+
+# Or start all projects
+docker compose -f docker-compose.multi-project.yml --profile event-me --profile office365 up -d
+```
+
+**📖 Full guide:** [docs/MULTI_PROJECT_GUIDE.md](docs/MULTI_PROJECT_GUIDE.md)
 
 ## Architecture
 
@@ -406,6 +450,43 @@ A: Yes, but ensure:
 
 **Q: How many runners can I run?**
 A: Limited by your host resources. Each runner needs ~1GB RAM minimum.
+
+## Advanced Usage
+
+### Multi-Project Management
+
+This repository supports running runners for multiple projects simultaneously using Docker Compose profiles. Each project gets:
+- ✅ Isolated containers and volumes
+- ✅ Independent token management
+- ✅ Granular start/stop control
+- ✅ No conflicts between projects
+
+**Quick example:**
+```bash
+# .env file
+EVENT_ME_RUNNER_URL=https://github.com/user/event-me
+EVENT_ME_RUNNER_TOKEN=token1
+
+OFFICE365_RUNNER_URL=https://github.com/user/office365-admin
+OFFICE365_RUNNER_TOKEN=token2
+
+# Start event-me runners only
+docker compose -f docker-compose.multi-project.yml --profile event-me up -d
+
+# Add office365 runners without stopping event-me
+docker compose -f docker-compose.multi-project.yml --profile office365 up -d
+
+# Check status
+docker ps --filter "name=gh-runner"
+```
+
+See [docs/MULTI_PROJECT_GUIDE.md](docs/MULTI_PROJECT_GUIDE.md) for complete documentation with 3 different approaches.
+
+## Documentation
+
+- 📖 [Quick Start: Multi-Project Setup](docs/QUICKSTART_MULTI_PROJECT.md) - 5-minute guide
+- 📚 [Multi-Project Guide](docs/MULTI_PROJECT_GUIDE.md) - Complete guide with 3 approaches
+- 🏗️ [Project Structure](docs/PROJECT_STRUCTURE.md) - Architecture and file explanations
 
 ## Contributing
 

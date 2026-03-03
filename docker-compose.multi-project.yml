@@ -1,0 +1,76 @@
+# Multi-project GitHub Actions Runners
+# 
+# Usage:
+#   # Start only event.me runners
+#   docker compose -f docker-compose.multi-project.yml --profile event-me up -d
+#   
+#   # Start only office365-admin runners
+#   docker compose -f docker-compose.multi-project.yml --profile office365 up -d
+#   
+#   # Start all runners
+#   docker compose -f docker-compose.multi-project.yml --profile event-me --profile office365 up -d
+
+services:
+  # Event.me project runners
+  event-me-runner-1:
+    build: .
+    platform: linux/amd64
+    container_name: event-me-gh-runner-1
+    profiles: ["event-me"]
+    environment:
+      - RUNNER_URL=${EVENT_ME_RUNNER_URL}
+      - RUNNER_TOKEN=${EVENT_ME_RUNNER_TOKEN}
+      - RUNNER_NAME=event-me-runner-1
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - event-me-runner-1-data:/actions-runner/_work
+
+  event-me-runner-2:
+    build: .
+    platform: linux/amd64
+    container_name: event-me-gh-runner-2
+    profiles: ["event-me"]
+    environment:
+      - RUNNER_URL=${EVENT_ME_RUNNER_URL}
+      - RUNNER_TOKEN=${EVENT_ME_RUNNER_TOKEN}
+      - RUNNER_NAME=event-me-runner-2
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - event-me-runner-2-data:/actions-runner/_work
+
+  # Office365 Admin project runners
+  office365-runner-1:
+    build: .
+    platform: linux/amd64
+    container_name: office365-admin-gh-runner-1
+    profiles: ["office365"]
+    environment:
+      - RUNNER_URL=${OFFICE365_RUNNER_URL}
+      - RUNNER_TOKEN=${OFFICE365_RUNNER_TOKEN}
+      - RUNNER_NAME=office365-admin-runner-1
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - office365-runner-1-data:/actions-runner/_work
+
+  office365-runner-2:
+    build: .
+    platform: linux/amd64
+    container_name: office365-admin-gh-runner-2
+    profiles: ["office365"]
+    environment:
+      - RUNNER_URL=${OFFICE365_RUNNER_URL}
+      - RUNNER_TOKEN=${OFFICE365_RUNNER_TOKEN}
+      - RUNNER_NAME=office365-admin-runner-2
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - office365-runner-2-data:/actions-runner/_work
+
+volumes:
+  event-me-runner-1-data:
+  event-me-runner-2-data:
+  office365-runner-1-data:
+  office365-runner-2-data:

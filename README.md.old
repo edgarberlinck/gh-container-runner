@@ -1,0 +1,43 @@
+# GitHub Actions Self-Hosted Runner Docker
+
+Imagem Docker para executar um self-hosted runner do GitHub Actions.
+
+## Build
+
+```bash
+docker build -t gh-runner .
+```
+
+## Run
+
+```bash
+docker run -e RUNNER_URL=https://github.com/edgarberlinck/event.me \
+           -e RUNNER_TOKEN=YOUR_TOKEN_HERE \
+           gh-runner
+```
+
+## Variáveis de Ambiente
+
+- `RUNNER_URL`: URL do repositório GitHub (obrigatório)
+- `RUNNER_TOKEN`: Token de registro do runner (obrigatório)
+
+## Docker Compose
+
+Crie um arquivo `.env` baseado no `.env.example`:
+
+```bash
+cp .env.example .env
+# Edite o .env com suas credenciais
+```
+
+Suba os 2 runners:
+
+```bash
+docker-compose up -d
+```
+
+Para parar:
+
+```bash
+docker-compose down
+```

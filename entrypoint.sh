@@ -15,6 +15,11 @@ if [ -S /var/run/docker.sock ]; then
     sudo chmod 660 /var/run/docker.sock
 fi
 
+# Create _tool directory with proper permissions
+echo "Creating _tool directory..."
+mkdir -p /actions-runner/_work/_tool
+sudo chown -R runner:runner /actions-runner/_work/_tool
+
 ./config.sh --url "$RUNNER_URL" --token "$RUNNER_TOKEN" --name "$RUNNER_NAME" --unattended
 
 cleanup() {

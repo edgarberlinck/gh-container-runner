@@ -1,0 +1,30 @@
+services:
+  runner-1:
+    build: .
+    platform: linux/amd64
+    container_name: office365-admin-gh-runner-1
+    environment:
+      - RUNNER_URL=${OFFICE365_RUNNER_URL}
+      - RUNNER_TOKEN=${OFFICE365_RUNNER_TOKEN}
+      - RUNNER_NAME=office365-admin-runner-1
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - office365-runner-1-data:/actions-runner/_work
+
+  runner-2:
+    build: .
+    platform: linux/amd64
+    container_name: office365-admin-gh-runner-2
+    environment:
+      - RUNNER_URL=${OFFICE365_RUNNER_URL}
+      - RUNNER_TOKEN=${OFFICE365_RUNNER_TOKEN}
+      - RUNNER_NAME=office365-admin-runner-2
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - office365-runner-2-data:/actions-runner/_work
+
+volumes:
+  office365-runner-1-data:
+  office365-runner-2-data:
